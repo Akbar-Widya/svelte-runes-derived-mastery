@@ -1,22 +1,24 @@
 <script>
-	let { post, like } = $props();
+/**
+ * Derived and reactivity
+ * When you bind to or modify a selected object that points to an element within a deeply reactive array, 
+ * the changes automatically sync back to the original array.
+*/
+let items = $state([]);
 
-	let likes = $derived(post.likes);
+let index = $state(0);
+let selected = $derived(items[index]);
 
-	async function onclick() {
-		// increment the `likes` count immediately...
-		likes += 1;
+/**
+ * Destructuring
+ * If you use destructuring with a $derived declaration, 
+ * the resulting variables will all be reactive.
+*/
+let { a, b, c } = $derived(stuff());
 
-		// and tell the server, which will eventually update `post`
-		try {
-			await like();
-		} catch {
-			// failed! roll back the change
-			likes -= 1;
-		}
-	}
+// is roughly equivalent to:
+let _stuff = $derived(stuff());
+let a = $derived(_stuff.a);
+let b = $derived(_stuff.b);
+let c = $derived(_stuff.c);
 </script>
-
-<button {onclick}>🧡 {likes}</button>
-
-<!-- Prior to Svelte 5.25, deriveds were read-only. -->
