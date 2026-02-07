@@ -1,29 +1,22 @@
 <script>
-  let count = $state(0);
-  let doubled = $derived(count * 2);
-  let numbers = $state([1, 2, 3]);
-  let total = $derived.by(() => {
-    let total = 0;
-    for (const n of numbers) {
-      total += n;
-    }
-    return total;
-  })
+	let { post, like } = $props();
+
+	let likes = $derived(post.likes);
+
+	async function onclick() {
+		// increment the `likes` count immediately...
+		likes += 1;
+
+		// and tell the server, which will eventually update `post`
+		try {
+			await like();
+		} catch {
+			// failed! roll back the change
+			likes -= 1;
+		}
+	}
 </script>
 
-<main>
-  <button onclick={() => count++}>
-    {doubled}
-  </button>
-  <button onclick={() => numbers.push(numbers.length + 1)}>
-    {numbers.join(' + ')} = {total}
-  </button>
-</main>
+<button {onclick}>🧡 {likes}</button>
 
-<style>
-</style>
-
-<!-- In essence, $derived(expression) is equivalent to $derived.by(() => expression) -->
-
-<!-- additionals -->
-<!-- To exempt a piece of state from being treated as a dependency, use untrack -->
+<!-- Prior to Svelte 5.25, deriveds were read-only. -->
